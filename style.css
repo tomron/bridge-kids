@@ -538,6 +538,176 @@ body.at-start #new-game-btn {
   cursor: pointer;
 }
 
+/* ── Tutorial wizard ── */
+#tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(2px);
+}
+
+#tutorial-modal {
+  background: var(--felt-darker);
+  border: 2px solid var(--gold);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 540px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(245,200,66,0.1);
+}
+
+#tutorial-skip {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.15s;
+}
+
+#tutorial-skip:hover { color: rgba(255,255,255,0.8); }
+
+/* Slides container */
+#tutorial-slides {
+  position: relative;
+  min-height: 380px;
+  overflow: hidden;
+}
+
+.tutorial-slide {
+  padding: 40px 32px 16px;
+  animation: slide-in 0.3s ease forwards;
+}
+
+.tutorial-slide.hidden {
+  display: none !important;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-in-back {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.tutorial-slide.going-back {
+  animation: slide-in-back 0.3s ease forwards;
+}
+
+/* Illustration area */
+.tutorial-illustration {
+  width: 100%;
+  height: 170px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.03);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.tutorial-illustration svg {
+  width: 100%;
+  height: 100%;
+}
+
+.tutorial-slide h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.tutorial-slide p {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-light);
+  line-height: 1.7;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.tutorial-slide p strong {
+  color: var(--gold);
+}
+
+/* Footer */
+#tutorial-footer {
+  padding: 14px 24px 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Progress dots */
+#tutorial-dots {
+  display: flex;
+  gap: 10px;
+}
+
+.tut-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(245,200,66,0.5);
+  background: transparent;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.tut-dot.active {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+/* Navigation buttons */
+#tutorial-nav {
+  display: flex;
+  gap: 10px;
+}
+
+.tut-nav-btn {
+  padding: 10px 22px;
+  border-radius: var(--radius-btn);
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.tut-nav-btn:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-1px); }
+.tut-nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.tut-nav-btn.primary {
+  background: var(--gold);
+  color: #1a3a00;
+  border-color: var(--gold);
+  box-shadow: 0 4px 14px var(--gold-glow);
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   #app { grid-template-columns: 160px 1fr; }
