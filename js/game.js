@@ -306,6 +306,7 @@ function renderPhase() {
 }
 
 function renderHands() {
+  // South (player) — face-up
   const playerCards = document.getElementById('player-cards');
   clearElement(playerCards);
   const playerHand = sortHand(gameState.hands[0]);
@@ -330,14 +331,31 @@ function renderHands() {
     playerCards.appendChild(el);
   }
 
-  // Computer hand (North, face-down)
-  const compCards = document.getElementById('computer-cards');
-  clearElement(compCards);
-  const compCount = gameState.hands[2].length;
-  for (let i = 0; i < compCount; i++) {
+  // North (position 2) — face-down, horizontal
+  const northCards = document.getElementById('north-cards');
+  clearElement(northCards);
+  for (let i = 0; i < gameState.hands[2].length; i++) {
     const el = document.createElement('div');
     el.className = 'card face-down';
-    compCards.appendChild(el);
+    northCards.appendChild(el);
+  }
+
+  // West (position 1) — face-down, vertical column
+  const westCards = document.getElementById('west-cards');
+  clearElement(westCards);
+  for (let i = 0; i < gameState.hands[1].length; i++) {
+    const el = document.createElement('div');
+    el.className = 'card face-down';
+    westCards.appendChild(el);
+  }
+
+  // East (position 3) — face-down, vertical column
+  const eastCards = document.getElementById('east-cards');
+  clearElement(eastCards);
+  for (let i = 0; i < gameState.hands[3].length; i++) {
+    const el = document.createElement('div');
+    el.className = 'card face-down';
+    eastCards.appendChild(el);
   }
 }
 
