@@ -454,7 +454,10 @@ function renderScores() {
 function renderResult() {
   const d = gameState.resultData;
   if (!d) return;
-  document.getElementById('result-message').textContent = d.friendly;
+  const msgEl = document.getElementById('result-message');
+  msgEl.textContent = d.friendly;
+  const isWin = d.friendly.toLowerCase().includes('made') || d.friendly.toLowerCase().includes('you won');
+  msgEl.className = isWin ? 'win' : 'loss';
   document.getElementById('result-score').textContent =
     d.scoreMsg + '  Tricks made: ' + d.tricksMade + ' / needed: ' + (6 + gameState.contract.level);
 }

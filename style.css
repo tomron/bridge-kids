@@ -175,21 +175,25 @@ body.at-start #new-game-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .hand-label {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #9dc9a2;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  background: rgba(0,0,0,0.2);
+  padding: 3px 14px;
+  border-radius: 12px;
 }
 
 .cards-row {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 /* ── Cards ── */
@@ -275,11 +279,23 @@ body.at-start #new-game-btn {
 /* ── Start screen ── */
 #start-screen {
   text-align: center;
-  color: #d0f0d8;
-  line-height: 2;
+  color: var(--text-light);
+  line-height: 2.2;
+  padding: 24px;
 }
 
-#start-screen h2 { font-size: 1.5rem; color: var(--gold); margin-bottom: 8px; }
+#start-screen h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-shadow: 0 0 16px var(--gold-glow);
+}
+
+#start-screen p {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
 
 /* ── Trick area ── */
 #trick-area {
@@ -449,34 +465,43 @@ body.at-start #new-game-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+  padding: 24px;
 }
 
 #result-message {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--gold);
+  font-size: 1.7rem;
+  font-weight: 800;
 }
+
+#result-message.win { color: var(--gold); text-shadow: 0 0 20px var(--gold-glow); }
+#result-message.loss { color: #8ab4f8; }
 
 #result-score {
   font-size: 1rem;
-  color: #cce8cc;
-  line-height: 1.8;
+  font-weight: 600;
+  color: var(--text-light);
+  line-height: 1.9;
+  background: rgba(0,0,0,0.25);
+  border-radius: 12px;
+  padding: 12px 20px;
 }
 
 #next-hand-btn {
-  padding: 12px 28px;
+  padding: 14px 32px;
   background: var(--gold);
   color: #1a3a00;
   border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: bold;
+  border-radius: var(--radius-btn);
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 800;
   cursor: pointer;
-  transition: filter 0.15s;
+  transition: filter 0.15s, transform 0.1s;
+  box-shadow: 0 4px 16px var(--gold-glow);
 }
 
-#next-hand-btn:hover { filter: brightness(1.1); }
+#next-hand-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
 
 /* ── Hint overlay ── */
 #hint-overlay {
