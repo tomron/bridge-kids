@@ -286,12 +286,14 @@ function render() {
 }
 
 function renderPhase() {
+  document.body.classList.remove('at-start');
   ['start-screen', 'bidding-area', 'trick-area', 'result-area'].forEach(id => {
     document.getElementById(id).classList.add('hidden');
   });
 
   if (gameState.phase === 'start') {
     document.getElementById('start-screen').classList.remove('hidden');
+    document.body.classList.add('at-start');
   } else if (gameState.phase === 'bidding') {
     document.getElementById('bidding-area').classList.remove('hidden');
     renderBidBox();
