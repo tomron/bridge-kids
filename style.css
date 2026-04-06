@@ -1,9 +1,25 @@
+/* ── Design tokens ── */
+:root {
+  --felt: #1a6b2a;
+  --felt-dark: #0f3d16;
+  --felt-darker: #0a2e10;
+  --gold: #f5c842;
+  --gold-glow: rgba(245, 200, 66, 0.6);
+  --text-light: #e8f8ea;
+  --text-muted: #9dc9a2;
+  --panel-bg: linear-gradient(180deg, #0a2e10 0%, #1a4a20 100%);
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --radius-card: 10px;
+  --radius-btn: 10px;
+}
+
 /* ── Reset & base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #1a6b2a;  /* felt green */
+  font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;
+  background: var(--felt);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='4' height='4' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
   color: #fff;
   min-height: 100vh;
 }
