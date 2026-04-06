@@ -123,6 +123,163 @@
     </div>
   </div>
 
+  <!-- Tutorial wizard -->
+<div id="tutorial-overlay" class="hidden">
+  <div id="tutorial-modal">
+    <button id="tutorial-skip">Skip Tutorial</button>
+
+    <div id="tutorial-slides">
+
+      <!-- Slide 1: Welcome -->
+      <div class="tutorial-slide" data-slide="0">
+        <div class="tutorial-illustration" id="tut-illus-0">
+          <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+            <!-- Table oval -->
+            <ellipse cx="140" cy="80" rx="120" ry="65" fill="none" stroke="rgba(245,200,66,0.3)" stroke-width="2" stroke-dasharray="6 4"/>
+            <!-- N label -->
+            <rect x="112" y="8" width="56" height="28" rx="8" fill="#1a4a20" stroke="#f5c842" stroke-width="1.5"/>
+            <text x="140" y="27" text-anchor="middle" fill="#9dc9a2" font-size="12" font-family="Nunito,sans-serif" font-weight="700">Computer</text>
+            <!-- S label (You) -->
+            <rect x="112" y="124" width="56" height="28" rx="8" fill="#f5c842"/>
+            <text x="140" y="143" text-anchor="middle" fill="#1a3a00" font-size="12" font-family="Nunito,sans-serif" font-weight="800">You ⭐</text>
+            <!-- W label -->
+            <rect x="8" y="66" width="48" height="28" rx="8" fill="#1a4a20" stroke="#3a7a45" stroke-width="1.5"/>
+            <text x="32" y="85" text-anchor="middle" fill="#9dc9a2" font-size="12" font-family="Nunito,sans-serif" font-weight="700">CPU</text>
+            <!-- E label -->
+            <rect x="224" y="66" width="48" height="28" rx="8" fill="#1a4a20" stroke="#3a7a45" stroke-width="1.5"/>
+            <text x="248" y="85" text-anchor="middle" fill="#9dc9a2" font-size="12" font-family="Nunito,sans-serif" font-weight="700">CPU</text>
+            <!-- Center dot -->
+            <circle cx="140" cy="80" r="5" fill="rgba(245,200,66,0.5)"/>
+          </svg>
+        </div>
+        <h2>Welcome to Bridge!</h2>
+        <p>Bridge is a card game for 4 players. <strong>You</strong> sit at the bottom and play against the computer who controls the other 3 seats.</p>
+        <p>Your goal: win <strong>tricks</strong> (rounds of cards) and make your contract!</p>
+      </div>
+
+      <!-- Slide 2: The Cards -->
+      <div class="tutorial-slide hidden" data-slide="1">
+        <div class="tutorial-illustration" id="tut-illus-1">
+          <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+            <!-- 4 example cards -->
+            <!-- Spades card -->
+            <rect x="20" y="20" width="50" height="70" rx="8" fill="white" stroke="#ccc" stroke-width="1.5"/>
+            <text x="28" y="38" fill="#111" font-size="13" font-family="Nunito,sans-serif" font-weight="800">A</text>
+            <text x="33" y="58" fill="#111" font-size="20" font-family="Nunito,sans-serif">♠</text>
+            <!-- Hearts card -->
+            <rect x="80" y="20" width="50" height="70" rx="8" fill="white" stroke="#cc9999" stroke-width="1.5"/>
+            <text x="88" y="38" fill="#cc0000" font-size="13" font-family="Nunito,sans-serif" font-weight="800">K</text>
+            <text x="93" y="58" fill="#cc0000" font-size="20" font-family="Nunito,sans-serif">♥</text>
+            <!-- Diamonds card - trump highlighted -->
+            <rect x="140" y="14" width="52" height="73" rx="8" fill="white" stroke="#f5c842" stroke-width="2.5"/>
+            <text x="148" y="33" fill="#cc0000" font-size="13" font-family="Nunito,sans-serif" font-weight="800">Q</text>
+            <text x="154" y="54" fill="#cc0000" font-size="20" font-family="Nunito,sans-serif">♦</text>
+            <text x="166" y="100" text-anchor="middle" fill="#f5c842" font-size="9" font-family="Nunito,sans-serif" font-weight="700">TRUMP</text>
+            <!-- Clubs card -->
+            <rect x="200" y="20" width="50" height="70" rx="8" fill="white" stroke="#ccc" stroke-width="1.5"/>
+            <text x="208" y="38" fill="#111" font-size="13" font-family="Nunito,sans-serif" font-weight="800">7</text>
+            <text x="213" y="58" fill="#111" font-size="20" font-family="Nunito,sans-serif">♣</text>
+            <!-- Label row -->
+            <text x="45" y="112" text-anchor="middle" fill="#9dc9a2" font-size="10" font-family="Nunito,sans-serif">Spades</text>
+            <text x="105" y="112" text-anchor="middle" fill="#9dc9a2" font-size="10" font-family="Nunito,sans-serif">Hearts</text>
+            <text x="166" y="112" text-anchor="middle" fill="#f5c842" font-size="10" font-family="Nunito,sans-serif" font-weight="700">Diamonds</text>
+            <text x="225" y="112" text-anchor="middle" fill="#9dc9a2" font-size="10" font-family="Nunito,sans-serif">Clubs</text>
+            <text x="140" y="148" text-anchor="middle" fill="#e8f8ea" font-size="10" font-family="Nunito,sans-serif">A is highest, then K Q J 10 … 2 is lowest</text>
+          </svg>
+        </div>
+        <h2>The Cards</h2>
+        <p>There are 4 suits: ♠ ♥ ♦ ♣. The <strong>trump suit</strong> (shown in gold) beats all other suits!</p>
+        <p>When a suit is led, you <strong>must follow suit</strong> if you can. If you can't, you may play a trump to win!</p>
+      </div>
+
+      <!-- Slide 3: Bidding -->
+      <div class="tutorial-slide hidden" data-slide="2">
+        <div class="tutorial-illustration" id="tut-illus-2">
+          <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+            <!-- Bid box representation -->
+            <rect x="30" y="15" width="220" height="105" rx="10" fill="rgba(255,255,255,0.06)" stroke="rgba(245,200,66,0.3)" stroke-width="1.5"/>
+            <!-- Sample bid buttons row 1 -->
+            <rect x="42" y="28" width="36" height="26" rx="5" fill="rgba(255,255,255,0.08)" stroke="#4a9955" stroke-width="1.5"/>
+            <text x="60" y="46" text-anchor="middle" fill="white" font-size="11" font-family="Nunito,sans-serif" font-weight="700">1♣</text>
+            <rect x="84" y="28" width="36" height="26" rx="5" fill="rgba(255,255,255,0.08)" stroke="#4a9955" stroke-width="1.5"/>
+            <text x="102" y="46" text-anchor="middle" fill="#ff8888" font-size="11" font-family="Nunito,sans-serif" font-weight="700">1♦</text>
+            <rect x="126" y="28" width="36" height="26" rx="5" fill="rgba(255,255,255,0.08)" stroke="#4a9955" stroke-width="1.5"/>
+            <text x="144" y="46" text-anchor="middle" fill="#ff8888" font-size="11" font-family="Nunito,sans-serif" font-weight="700">1♥</text>
+            <rect x="168" y="28" width="36" height="26" rx="5" fill="rgba(255,255,255,0.08)" stroke="#4a9955" stroke-width="1.5"/>
+            <text x="186" y="46" text-anchor="middle" fill="white" font-size="11" font-family="Nunito,sans-serif" font-weight="700">1♠</text>
+            <rect x="210" y="28" width="36" height="26" rx="5" fill="rgba(255,255,255,0.08)" stroke="#4a9955" stroke-width="1.5"/>
+            <text x="228" y="46" text-anchor="middle" fill="white" font-size="10" font-family="Nunito,sans-serif" font-weight="700">1NT</text>
+            <!-- Highlighted bid -->
+            <rect x="126" y="62" width="36" height="26" rx="5" fill="rgba(245,200,66,0.2)" stroke="#f5c842" stroke-width="2"/>
+            <text x="144" y="80" text-anchor="middle" fill="#f5c842" font-size="11" font-family="Nunito,sans-serif" font-weight="800">2♥</text>
+            <!-- Arrow pointing to it -->
+            <path d="M 100 75 L 122 75" stroke="#f5c842" stroke-width="2" marker-end="url(#arr)"/>
+            <defs>
+              <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#f5c842"/>
+              </marker>
+            </defs>
+            <text x="75" y="70" text-anchor="middle" fill="#f5c842" font-size="9" font-family="Nunito,sans-serif">Your</text>
+            <text x="75" y="82" text-anchor="middle" fill="#f5c842" font-size="9" font-family="Nunito,sans-serif">bid!</text>
+            <!-- Pass button -->
+            <rect x="80" y="102" width="50" height="10" rx="4" fill="rgba(255,255,255,0.08)" stroke="#4a9955" stroke-width="1"/>
+            <text x="105" y="112" text-anchor="middle" fill="white" font-size="8" font-family="Nunito,sans-serif">Pass</text>
+            <text x="140" y="142" text-anchor="middle" fill="#9dc9a2" font-size="9" font-family="Nunito,sans-serif">"2♥" means: I'll win 8 tricks with ♥ as trump</text>
+          </svg>
+        </div>
+        <h2>Bidding</h2>
+        <p>Before playing, you <strong>bid</strong> how many tricks you think you'll win, plus which suit is trump.</p>
+        <p>A bid of <strong>2♥</strong> means "I'll win at least <strong>8 tricks</strong> (6 + 2) with hearts as trump." The highest bid becomes the <strong>contract</strong>!</p>
+      </div>
+
+      <!-- Slide 4: Winning Tricks -->
+      <div class="tutorial-slide hidden" data-slide="3">
+        <div class="tutorial-illustration" id="tut-illus-3">
+          <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+            <!-- 4 cards in trick positions -->
+            <!-- North -->
+            <rect x="112" y="8" width="52" height="36" rx="6" fill="white" stroke="#ccc" stroke-width="1.5"/>
+            <text x="122" y="28" fill="#111" font-size="14" font-family="Nunito,sans-serif" font-weight="800">5♠</text>
+            <!-- West -->
+            <rect x="28" y="62" width="52" height="36" rx="6" fill="white" stroke="#ccc" stroke-width="1.5"/>
+            <text x="38" y="82" fill="#111" font-size="14" font-family="Nunito,sans-serif" font-weight="800">J♠</text>
+            <!-- East -->
+            <rect x="196" y="62" width="52" height="36" rx="6" fill="white" stroke="#ccc" stroke-width="1.5"/>
+            <text x="206" y="82" fill="#111" font-size="14" font-family="Nunito,sans-serif" font-weight="800">3♠</text>
+            <!-- South (winner - gold border) -->
+            <rect x="112" y="116" width="52" height="36" rx="6" fill="white" stroke="#f5c842" stroke-width="2.5"/>
+            <text x="122" y="138" fill="#111" font-size="14" font-family="Nunito,sans-serif" font-weight="800">A♠</text>
+            <!-- Winner star -->
+            <text x="168" y="136" fill="#f5c842" font-size="16" font-family="Nunito,sans-serif">⭐</text>
+            <!-- Center label -->
+            <text x="140" y="86" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="Nunito,sans-serif">trick</text>
+            <!-- Arrow pointing to south -->
+            <text x="140" y="108" text-anchor="middle" fill="#f5c842" font-size="9" font-family="Nunito,sans-serif" font-weight="700">▼ You win!</text>
+          </svg>
+        </div>
+        <h2>Winning Tricks</h2>
+        <p>Each player plays one card. The <strong>highest card of the led suit wins</strong> — unless someone plays a <strong>trump card</strong>, which beats everything!</p>
+        <p>Win enough tricks to make your contract and you score points. Fall short and the computer scores instead!</p>
+      </div>
+
+    </div><!-- /#tutorial-slides -->
+
+    <div id="tutorial-footer">
+      <div id="tutorial-dots">
+        <span class="tut-dot active" data-dot="0"></span>
+        <span class="tut-dot" data-dot="1"></span>
+        <span class="tut-dot" data-dot="2"></span>
+        <span class="tut-dot" data-dot="3"></span>
+      </div>
+      <div id="tutorial-nav">
+        <button id="tut-prev" class="tut-nav-btn" disabled>← Back</button>
+        <button id="tut-next" class="tut-nav-btn primary">Next →</button>
+        <button id="tut-done" class="tut-nav-btn primary hidden">Got it! Let's Play 🎉</button>
+      </div>
+    </div>
+  </div><!-- /#tutorial-modal -->
+</div><!-- /#tutorial-overlay -->
+
   <script src="js/cards.js"></script>
   <script src="js/ai.js"></script>
   <script src="js/scoring.js"></script>
