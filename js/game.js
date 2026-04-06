@@ -451,15 +451,16 @@ function renderContractInfo() {
   if (!gameState.contract) { info.classList.add('hidden'); return; }
   info.classList.remove('hidden');
   const c = gameState.contract;
-  const declarer = c.declarer === 0 ? 'You' : 'Computer';
+  const declarerTeam = c.declarer % 2 === 0 ? 'NS' : 'EW';
+  const declarerName = POSITION_NAMES[c.declarer];
   let label = c.level + c.suit;
   if (c.doubled) label += ' X';
   if (c.redoubled) label += ' XX';
   document.getElementById('contract-display').textContent = label;
   document.getElementById('trump-display').textContent =
     c.suit === 'NT'
-      ? 'No Trump | Declarer: ' + declarer
-      : 'Trump: ' + c.suit + ' | Declarer: ' + declarer;
+      ? 'No Trump | Declarer: ' + declarerTeam + ' (' + declarerName + ')'
+      : 'Trump: ' + c.suit + ' | Declarer: ' + declarerTeam + ' (' + declarerName + ')';
 }
 
 function renderScores() {

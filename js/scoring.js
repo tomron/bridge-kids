@@ -58,13 +58,12 @@ function undertrickPenalty(undertricks, doubled, redoubled) {
 function resultScreenText(contract, tricksMade, declarerIsPlayer) {
   const needed = 6 + contract.level;
   const made = tricksMade >= needed;
-  const who = declarerIsPlayer ? 'You' : 'The computer';
-  const whoLower = declarerIsPlayer ? 'you' : 'the computer';
+  const declarerTeam = contract.declarer % 2 === 0 ? 'NS' : 'EW';
 
   if (made) {
-    return `${who} made the contract! 🎉`;
+    return `${declarerTeam} made the contract! 🎉`;
   } else {
     const short = needed - tricksMade;
-    return `${who.replace('You', 'Your')} contract was defeated — ${short} trick${short > 1 ? 's' : ''} short.`;
+    return `${declarerTeam} contract was defeated — ${short} trick${short > 1 ? 's' : ''} short.`;
   }
 }
