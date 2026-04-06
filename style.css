@@ -270,8 +270,8 @@ body.at-start #new-game-btn {
 .card {
   width: 72px;
   height: 108px;
-  border-radius: var(--radius-card);
-  border: 2px solid #ccc;
+  border-radius: 12px;
+  border: 2px solid rgba(0,0,0,0.15);
   background: #fff;
   color: #111;
   display: flex;
@@ -286,38 +286,54 @@ body.at-start #new-game-btn {
   position: relative;
   transition: transform 0.15s, box-shadow 0.15s;
   box-shadow: var(--card-shadow);
+  overflow: hidden;
 }
 
-.card .rank { font-size: 0.95rem; line-height: 1; }
-.card .suit { font-size: 1.15rem; line-height: 1; text-align: center; }
-.card .rank-bottom { font-size: 0.95rem; line-height: 1; text-align: right; transform: rotate(180deg); }
+/* Large center suit symbol */
+.card::before {
+  content: attr(data-suit);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.4rem;
+  line-height: 1;
+  opacity: 0.18;
+  pointer-events: none;
+}
 
-.card.red { color: #cc0000; border-color: #cc9999; }
+.card .rank { font-size: 1rem; line-height: 1; font-weight: 900; position: relative; z-index: 1; }
+.card .suit { display: none; }
+.card .rank-bottom { font-size: 1rem; line-height: 1; text-align: right; transform: rotate(180deg); font-weight: 900; position: relative; z-index: 1; }
+
+/* Suit-colored tint backgrounds */
+.card.suit-hearts   { background: linear-gradient(145deg, #fff8f8 0%, #ffe0e0 100%); color: #c0001e; border-color: #f5a0a0; }
+.card.suit-diamonds { background: linear-gradient(145deg, #fff8f4 0%, #ffe8d0 100%); color: #c05000; border-color: #f5b880; }
+.card.suit-spades   { background: linear-gradient(145deg, #f4f8ff 0%, #d0e0f8 100%); color: #003080; border-color: #80a8e8; }
+.card.suit-clubs    { background: linear-gradient(145deg, #f4fff6 0%, #d0f0d8 100%); color: #006020; border-color: #80d090; }
+
+.card.red { /* intentionally empty — color now set per suit class */ }
 
 .card.face-down {
-  background:
-    repeating-linear-gradient(
-      135deg,
-      #1a4a7a,
-      #1a4a7a 5px,
-      #2268a8 5px,
-      #2268a8 10px
-    );
-  border-color: #1a3a6a;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7c59f 25%, #efefd0 50%, #6bbfed 75%, #a855f7 100%);
+  border-color: rgba(255,255,255,0.4);
   cursor: default;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.card.face-down::before { content: ''; }
+
 .card.face-down::after {
-  content: '♠';
-  font-size: 1.6rem;
-  color: rgba(255,255,255,0.25);
+  content: '★';
+  font-size: 2rem;
+  color: rgba(255,255,255,0.85);
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 /* Legal / playable cards */
@@ -857,10 +873,10 @@ body.at-start #new-game-btn {
   .cards-col .card { margin-bottom: -32px; }
 
   /* Smaller cards on phones */
-  .card { width: 46px; height: 68px; font-size: 0.72rem; padding: 3px 4px; border-radius: 6px; }
-  .card .suit { font-size: 0.9rem; }
+  .card { width: 46px; height: 68px; font-size: 0.72rem; padding: 3px 4px; border-radius: 8px; }
   .card .rank { font-size: 0.72rem; }
   .card .rank-bottom { font-size: 0.72rem; }
+  .card::before { font-size: 1.8rem; }
   .card.face-down::after { font-size: 1.1rem; }
 
   /* Cards row: tighter gap */

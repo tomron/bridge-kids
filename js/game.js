@@ -497,7 +497,10 @@ function renderThinkingIndicator() {
 function createCardElement(card) {
   const el = document.createElement('div');
   el.className = 'card';
-  if (card.suit === '♥' || card.suit === '♦') el.classList.add('red');
+
+  const suitClassMap = { '♥': 'suit-hearts', '♦': 'suit-diamonds', '♠': 'suit-spades', '♣': 'suit-clubs' };
+  el.classList.add(suitClassMap[card.suit] || '');
+  el.dataset.suit = card.suit;
 
   const rankTop = document.createElement('span');
   rankTop.className = 'rank';
