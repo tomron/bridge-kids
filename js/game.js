@@ -419,7 +419,7 @@ function renderBidBox() {
   const hist = document.getElementById('auction-history');
   hist.textContent = gameState.auction.map(e => {
     const b = e.bid;
-    const name = e.position === 0 ? 'You' : 'Computer';
+    const name = POSITION_NAMES[e.position];
     if (b === 'pass') return name + ': Pass';
     if (b === 'double') return name + ': X';
     if (b === 'redouble') return name + ': XX';
