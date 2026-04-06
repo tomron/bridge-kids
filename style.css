@@ -717,13 +717,99 @@ body.at-start #new-game-btn {
   .trick-slot .card { width: 60px; height: 88px; }
 }
 
-@media (max-width: 768px) {
-  #app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-  #side-panel { flex-direction: row; flex-wrap: wrap; padding: 10px; gap: 10px; }
-  #side-panel h1 { width: 100%; }
-  #action-buttons { flex-direction: row; margin-top: 0; }
-  #tutorial-modal { max-width: 100%; border-radius: 14px 14px 0 0; align-self: flex-end; margin-top: auto; }
+/* ── Mobile (≤ 600px) ── */
+@media (max-width: 600px) {
+  /* Stack layout: side panel on top, table below */
+  #app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  /* Side panel becomes a compact horizontal strip */
+  #side-panel {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    gap: 8px;
+    border-right: none;
+    border-bottom: 1px solid rgba(245, 200, 66, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  #side-panel h1 { width: 100%; font-size: 1rem; margin-bottom: 0; }
+
+  #difficulty-section { flex: 1 1 auto; min-width: 120px; }
+  #difficulty-selector { flex-direction: row; }
+  .diff-btn { padding: 5px 8px; font-size: 0.75rem; border-radius: 14px; }
+
+  #contract-info { flex: 0 0 auto; }
+  #contract-display { font-size: 1.1rem; }
+  #trump-display { font-size: 0.72rem; }
+
+  #score-panel { flex: 1 1 auto; min-width: 100px; }
+  #trick-counts, #session-scores { font-size: 0.8rem; line-height: 1.6; margin-bottom: 4px; }
+
+  #action-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 0;
+    gap: 6px;
+    width: 100%;
+  }
+  #action-buttons button { flex: 1 1 auto; padding: 8px 6px; font-size: 0.8rem; }
+  #new-session-btn { font-size: 0.72rem; }
+
+  /* Table area: tighter padding */
+  #table { padding: 8px; gap: 8px; min-height: unset; }
+
+  /* Smaller cards on phones */
+  .card { width: 46px; height: 68px; font-size: 0.72rem; padding: 3px 4px; border-radius: 6px; }
+  .card .suit { font-size: 0.9rem; }
+  .card .rank { font-size: 0.72rem; }
+  .card .rank-bottom { font-size: 0.72rem; }
+  .card.face-down::after { font-size: 1.1rem; }
+
+  /* Cards row: tighter gap */
+  .cards-row { gap: 3px; }
+
+  /* Trick area: shrink slots */
+  .trick-slot { width: 54px; height: 74px; }
+  .trick-slot .card { width: 48px; height: 68px; }
+  #trick-cards::before { width: 160px; height: 160px; }
+  #trick-center-label { width: 48px; font-size: 0.65rem; }
+
+  /* Bid grid: smaller buttons, 5 columns */
+  #bid-grid {
+    grid-template-columns: repeat(5, 38px);
+    grid-template-rows: repeat(7, 34px);
+    gap: 3px;
+  }
+  .bid-btn { font-size: 0.72rem; }
+  .bid-btn .bid-suit { font-size: 0.85rem; }
+  .bid-special { padding: 6px 12px; font-size: 0.8rem; }
+
+  /* Result screen */
+  #result-message { font-size: 1.3rem; }
+  #result-score { font-size: 0.88rem; padding: 10px 14px; }
+
+  /* Hand labels */
+  .hand-label { font-size: 0.7rem; padding: 2px 10px; }
+
+  /* Start screen */
+  #start-screen h2 { font-size: 1.4rem; }
+  #start-screen p { font-size: 0.9rem; }
+
+  /* Tutorial: bottom sheet */
   #tutorial-overlay { align-items: flex-end; }
-  .tutorial-slide { padding: 28px 20px 12px; }
-  .tutorial-illustration { height: 130px; }
+  #tutorial-modal {
+    max-width: 100%;
+    border-radius: 14px 14px 0 0;
+    align-self: flex-end;
+  }
+  .tutorial-slide { padding: 28px 16px 10px; }
+  .tutorial-illustration { height: 120px; }
+  .tutorial-slide h2 { font-size: 1.1rem; }
+  .tutorial-slide p { font-size: 0.85rem; }
+  #tutorial-footer { padding: 10px 16px 16px; gap: 10px; }
+  .tut-nav-btn { padding: 8px 16px; font-size: 0.82rem; }
 }
