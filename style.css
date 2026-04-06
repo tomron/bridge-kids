@@ -164,10 +164,67 @@ body.at-start #new-game-btn {
 /* ── Main table ── */
 #table {
   display: grid;
+  grid-template-columns: 120px 1fr 120px;
   grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    ".      north  ."
+    "west   center east"
+    ".      south  .";
   padding: 16px;
   gap: 12px;
   min-height: 100vh;
+}
+
+#north-hand  { grid-area: north; }
+#west-hand   { grid-area: west; }
+#center-area { grid-area: center; }
+#east-hand   { grid-area: east; }
+#player-hand { grid-area: south; }
+
+/* West/East hands: vertical layout */
+.hand-west,
+.hand-east {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cards-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Side cards are smaller face-down backs */
+.hand-west .card,
+.hand-east .card {
+  width: 46px;
+  height: 68px;
+}
+
+/* Team badges */
+.team-badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 8px;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.ns-badge {
+  background: rgba(245, 200, 66, 0.2);
+  color: var(--gold);
+  border: 1px solid rgba(245, 200, 66, 0.5);
+}
+
+.ew-badge {
+  background: rgba(58, 143, 199, 0.2);
+  color: #7ec8f0;
+  border: 1px solid rgba(58, 143, 199, 0.5);
 }
 
 /* ── Hand areas ── */
@@ -711,10 +768,18 @@ body.at-start #new-game-btn {
 /* ── Responsive ── */
 @media (max-width: 900px) {
   #app { grid-template-columns: 160px 1fr; }
-  .card { width: 60px; height: 90px; font-size: 0.85rem; }
+  .card { width: 60px; height: 90px; font-size: 0.85rem; border-radius: 10px; }
   #bid-grid { grid-template-columns: repeat(5, 44px); }
   .trick-slot { width: 68px; height: 96px; }
   .trick-slot .card { width: 60px; height: 88px; }
+  #table {
+    grid-template-columns: 90px 1fr 90px;
+  }
+  .hand-west .card,
+  .hand-east .card {
+    width: 38px;
+    height: 56px;
+  }
 }
 
 /* ── Mobile (≤ 600px) ── */
@@ -760,7 +825,20 @@ body.at-start #new-game-btn {
   #new-session-btn { font-size: 0.72rem; }
 
   /* Table area: tighter padding */
-  #table { padding: 8px; gap: 8px; min-height: unset; }
+  #table {
+    grid-template-columns: 60px 1fr 60px;
+    padding: 8px;
+    gap: 6px;
+    min-height: unset;
+  }
+
+  .hand-west .card,
+  .hand-east .card {
+    width: 32px;
+    height: 48px;
+  }
+
+  .cards-col { gap: 2px; }
 
   /* Smaller cards on phones */
   .card { width: 46px; height: 68px; font-size: 0.72rem; padding: 3px 4px; border-radius: 6px; }
