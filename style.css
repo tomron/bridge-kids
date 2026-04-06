@@ -172,7 +172,8 @@ body.at-start #new-game-btn {
     ".      south  .";
   padding: 16px;
   gap: 12px;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 #north-hand  { grid-area: north; }
@@ -187,13 +188,23 @@ body.at-start #new-game-btn {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .cards-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 0;
+}
+
+/* Fan/stack side cards with overlap so 13 cards fit vertically */
+.cards-col .card {
+  margin-bottom: -46px; /* overlap: only 22px of each card peeks out */
+}
+
+.cards-col .card:last-child {
+  margin-bottom: 0;
 }
 
 /* Side cards are smaller face-down backs */
@@ -780,6 +791,8 @@ body.at-start #new-game-btn {
     width: 38px;
     height: 56px;
   }
+
+  .cards-col .card { margin-bottom: -38px; }
 }
 
 /* ── Mobile (≤ 600px) ── */
@@ -829,7 +842,7 @@ body.at-start #new-game-btn {
     grid-template-columns: 60px 1fr 60px;
     padding: 8px;
     gap: 6px;
-    min-height: unset;
+    height: 100dvh;
   }
 
   .hand-west .card,
@@ -838,7 +851,8 @@ body.at-start #new-game-btn {
     height: 48px;
   }
 
-  .cards-col { gap: 2px; }
+  /* Tighter overlap on small phones */
+  .cards-col .card { margin-bottom: -32px; }
 
   /* Smaller cards on phones */
   .card { width: 46px; height: 68px; font-size: 0.72rem; padding: 3px 4px; border-radius: 6px; }
