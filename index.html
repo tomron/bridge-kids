@@ -52,10 +52,16 @@
 
     <!-- Main table -->
     <main id="table">
-      <!-- Computer hand (top) -->
-      <div id="computer-hand" class="hand-area">
-        <div class="hand-label">Computer</div>
-        <div id="computer-cards" class="cards-row"></div>
+      <!-- North hand (top center) -->
+      <div id="north-hand" class="hand-area hand-north">
+        <div class="hand-label"><span class="team-badge ns-badge">NS</span> North</div>
+        <div id="north-cards" class="cards-row"></div>
+      </div>
+
+      <!-- West hand (middle left) -->
+      <div id="west-hand" class="hand-area hand-west">
+        <div class="hand-label"><span class="team-badge ew-badge">EW</span> West</div>
+        <div id="west-cards" class="cards-col"></div>
       </div>
 
       <!-- Center: bidding or trick area -->
@@ -107,9 +113,15 @@
         </div>
       </div>
 
-      <!-- Player hand (bottom) -->
-      <div id="player-hand" class="hand-area">
-        <div class="hand-label">You</div>
+      <!-- East hand (middle right) -->
+      <div id="east-hand" class="hand-area hand-east">
+        <div class="hand-label"><span class="team-badge ew-badge">EW</span> East</div>
+        <div id="east-cards" class="cards-col"></div>
+      </div>
+
+      <!-- South / Player hand (bottom center) -->
+      <div id="player-hand" class="hand-area hand-south">
+        <div class="hand-label"><span class="team-badge ns-badge">NS</span> You (South)</div>
         <div id="player-cards" class="cards-row"></div>
       </div>
     </main>
