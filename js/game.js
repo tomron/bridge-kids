@@ -507,7 +507,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('new-game-btn').addEventListener('click', () => dispatch({ type: 'NEW_GAME' }));
   document.getElementById('new-session-btn').addEventListener('click', () => dispatch({ type: 'NEW_SESSION' }));
   document.getElementById('next-hand-btn').addEventListener('click', () => dispatch({ type: 'NEXT_HAND' }));
-  document.getElementById('help-btn').addEventListener('click', () => dispatch({ type: 'SHOW_HINT' }));
+  document.getElementById('help-btn').addEventListener('click', () => {
+    if (gameState.phase === 'start') {
+      showTutorial();
+    } else {
+      dispatch({ type: 'SHOW_HINT' });
+    }
+  });
   document.getElementById('hint-close').addEventListener('click', () => dispatch({ type: 'HIDE_HINT' }));
   document.getElementById('hint-overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('hint-overlay')) dispatch({ type: 'HIDE_HINT' });
@@ -518,4 +524,5 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   render();
+  initTutorial();
 });
