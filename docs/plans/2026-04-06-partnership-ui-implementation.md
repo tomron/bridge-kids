@@ -2,9 +2,9 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Restructure the Bridge for Kids UI to clearly show NS vs EW partnerships with a full 4-direction table layout, all four hands visible (South face-up, others face-down), and all labels/scores using NS/EW terminology.
+**Goal:** Restructure the Bridge for Kids UI to clearly show NS vs EW partnerships with a full 4-direction table layout, all four hands visible (South face-up, others face-down), NS/EW labels throughout, and Taki-inspired kid-friendly card design.
 
-**Architecture:** Three coordinated changes — (1) HTML adds West and East hand sections to the table, (2) CSS restructures `#table` into a 3×3 grid with vertical side hands, (3) JS updates all render functions to use NS/EW labels and render West/East face-down hands.
+**Architecture:** Four coordinated changes — (1) HTML adds West and East hand sections to the table, (2) CSS restructures `#table` into a 3×3 grid with vertical side hands, (3) JS updates all render functions to use NS/EW labels and render West/East face-down hands, (4) CSS redesigns cards with bold suit-colored backgrounds, large center suit symbols, and a fun face-down back.
 
 **Tech Stack:** Vanilla HTML/CSS/JS — no build tools, no frameworks. Edit files directly.
 
@@ -496,7 +496,149 @@ git commit -m "feat: show position names in auction history"
 
 ---
 
-## Task 7: Final visual QA pass
+## Task 7: Taki-style card redesign
+
+**Files:**
+- Modify: `style.css` — `.card`, `.card.red`, `.card.face-down`, `.card.face-down::after` blocks (lines 200–251)
+
+**Step 1: Replace card face styles**
+
+Find the `.card` block and everything through `.card.face-down::after`, and replace with:
+
+```css
+.card {
+  width: 72px;
+  height: 108px;
+  border-radius: 12px;
+  border: 2px solid rgba(0,0,0,0.15);
+  background: #fff;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px 7px;
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: default;
+  user-select: none;
+  position: relative;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+/* Large center suit symbol */
+.card::before {
+  content: attr(data-suit);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.4rem;
+  line-height: 1;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.card .rank { font-size: 1rem; line-height: 1; font-weight: 900; position: relative; z-index: 1; }
+.card .suit { display: none; }  /* hidden — shown via ::before pseudo-element */
+.card .rank-bottom { font-size: 1rem; line-height: 1; text-align: right; transform: rotate(180deg); font-weight: 900; position: relative; z-index: 1; }
+
+/* Suit-colored tint backgrounds */
+.card.suit-hearts   { background: linear-gradient(145deg, #fff8f8 0%, #ffe0e0 100%); color: #c0001e; border-color: #f5a0a0; }
+.card.suit-diamonds { background: linear-gradient(145deg, #fff8f4 0%, #ffe8d0 100%); color: #c05000; border-color: #f5b880; }
+.card.suit-spades   { background: linear-gradient(145deg, #f4f8ff 0%, #d0e0f8 100%); color: #003080; border-color: #80a8e8; }
+.card.suit-clubs    { background: linear-gradient(145deg, #f4fff6 0%, #d0f0d8 100%); color: #006020; border-color: #80d090; }
+
+/* Remove old .card.red rule — color is now per-suit class above */
+.card.red { /* intentionally empty — kept for compatibility */ }
+
+.card.face-down {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7c59f 25%, #efefd0 50%, #6bbfed 75%, #a855f7 100%);
+  border-color: rgba(255,255,255,0.4);
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card.face-down::before { content: ''; }  /* suppress suit pseudo for face-down */
+
+.card.face-down::after {
+  content: '★';
+  font-size: 2rem;
+  color: rgba(255,255,255,0.85);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+```
+
+**Step 2: Update `createCardElement()` in `js/game.js` to set `data-suit` and suit class**
+
+Find `createCardElement()` (around line 478) and replace it with:
+
+```javascript
+function createCardElement(card) {
+  const el = document.createElement('div');
+  el.className = 'card';
+
+  const suitClassMap = { '♥': 'suit-hearts', '♦': 'suit-diamonds', '♠': 'suit-spades', '♣': 'suit-clubs' };
+  el.classList.add(suitClassMap[card.suit] || '');
+  el.dataset.suit = card.suit;
+
+  const rankTop = document.createElement('span');
+  rankTop.className = 'rank';
+  rankTop.textContent = card.rank;
+
+  const suit = document.createElement('span');
+  suit.className = 'suit';
+  suit.textContent = card.suit;
+
+  const rankBot = document.createElement('span');
+  rankBot.className = 'rank-bottom';
+  rankBot.textContent = card.rank;
+
+  el.appendChild(rankTop);
+  el.appendChild(suit);
+  el.appendChild(rankBot);
+  return el;
+}
+```
+
+**Step 3: Update responsive card sizes to preserve border-radius**
+
+In `@media (max-width: 900px)`, find `.card { width: 60px; height: 90px; ... }` and add `border-radius: 10px;`.
+
+In `@media (max-width: 600px)`, find `.card { width: 46px; height: 68px; ... }` and update `border-radius: 8px;`. Also update `.card::before` font-size for mobile:
+
+```css
+  .card::before { font-size: 1.8rem; }
+```
+
+**Step 4: Verify in browser**
+
+Start a new game. Confirm:
+- [ ] Hearts/diamonds cards have a warm red tint
+- [ ] Spades cards have a cool blue tint
+- [ ] Clubs cards have a green tint
+- [ ] Large center suit symbol visible on each card
+- [ ] Face-down cards have rainbow gradient + white star
+- [ ] Legal cards still highlight with gold border on your turn
+
+**Step 5: Commit**
+```bash
+git add style.css js/game.js
+git commit -m "feat: Taki-style card design with suit colors and large center symbol"
+```
+
+---
+
+## Task 8: Final visual QA pass
 
 **Step 1: Full game walkthrough**
 
@@ -520,8 +662,14 @@ Resize browser to 375px width. Verify:
 - [ ] Cards are legibly sized
 - [ ] Layout isn't broken
 
-**Step 4: Commit if any fixes needed, then final commit**
+**Step 4: Card design check**
+
+- [ ] Cards look Taki-style: bold colored tints, large center suit symbol, rainbow face-down back
+- [ ] Ranks are legible at all sizes
+- [ ] Legal card gold highlight still clearly visible
+
+**Step 5: Commit if any fixes needed, then final commit**
 ```bash
 git add -p   # stage only intentional fixes
-git commit -m "fix: partnership UI visual QA fixes"
+git commit -m "fix: partnership UI + card design visual QA fixes"
 ```
