@@ -194,58 +194,75 @@ body.at-start #new-game-btn {
 
 /* ── Cards ── */
 .card {
-  width: 64px;
-  height: 96px;
-  border-radius: 8px;
+  width: 72px;
+  height: 108px;
+  border-radius: var(--radius-card);
   border: 2px solid #ccc;
   background: #fff;
   color: #111;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 4px 6px;
+  padding: 5px 7px;
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 800;
+  font-family: inherit;
   cursor: default;
   user-select: none;
   position: relative;
-  transition: transform 0.1s, box-shadow 0.1s;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: var(--card-shadow);
 }
 
 .card .rank { font-size: 0.95rem; line-height: 1; }
-.card .suit { font-size: 1.1rem; line-height: 1; }
+.card .suit { font-size: 1.15rem; line-height: 1; text-align: center; }
 .card .rank-bottom { font-size: 0.95rem; line-height: 1; text-align: right; transform: rotate(180deg); }
 
 .card.red { color: #cc0000; border-color: #cc9999; }
 
 .card.face-down {
-  background: repeating-linear-gradient(
-    135deg,
-    #1a5276,
-    #1a5276 4px,
-    #2980b9 4px,
-    #2980b9 8px
-  );
-  border-color: #1a5276;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      #1a4a7a,
+      #1a4a7a 5px,
+      #2268a8 5px,
+      #2268a8 10px
+    );
+  border-color: #1a3a6a;
   cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card.face-down::after {
+  content: '♠';
+  font-size: 1.6rem;
+  color: rgba(255,255,255,0.25);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Legal / playable cards */
 .card.legal {
   cursor: pointer;
   border-color: var(--gold);
-  box-shadow: 0 0 8px var(--gold-glow);
+  box-shadow: 0 0 10px var(--gold-glow), var(--card-shadow);
 }
 
 .card.legal:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 6px 16px var(--gold-glow);
+  transform: translateY(-12px);
+  box-shadow: 0 10px 20px var(--gold-glow), var(--card-shadow);
 }
 
 /* Disabled (not legal to play) */
 .card.disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
+  filter: grayscale(20%);
 }
 
 /* ── Center area ── */
@@ -277,6 +294,21 @@ body.at-start #new-game-btn {
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  position: relative;
+}
+
+/* Dashed circle behind the trick */
+#trick-cards::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255,255,255,0.12);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .trick-row {
@@ -286,34 +318,58 @@ body.at-start #new-game-btn {
 }
 
 .trick-slot {
-  width: 72px;
-  height: 104px;
-  border-radius: 8px;
-  border: 2px dashed rgba(255,255,255,0.2);
+  width: 80px;
+  height: 112px;
+  border-radius: var(--radius-card);
+  border: 2px dashed rgba(255,255,255,0.18);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .trick-slot .card {
-  width: 68px;
-  height: 100px;
+  width: 72px;
+  height: 104px;
 }
 
 #trick-center-label {
-  width: 60px;
+  width: 64px;
   text-align: center;
-  font-size: 0.75rem;
-  color: #9dc9a2;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
 }
 
+/* Three-dot thinking indicator */
 #thinking-indicator {
   font-size: 0.85rem;
+  font-weight: 700;
   color: var(--gold);
-  animation: pulse 0.9s infinite alternate;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-@keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+.thinking-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.thinking-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: dot-bounce 1s ease-in-out infinite;
+}
+
+.thinking-dots span:nth-child(2) { animation-delay: 0.15s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+  40% { transform: translateY(-6px); opacity: 1; }
+}
 
 /* ── Bidding area ── */
 #bidding-area {
@@ -460,7 +516,7 @@ body.at-start #new-game-btn {
 /* ── Responsive ── */
 @media (max-width: 900px) {
   #app { grid-template-columns: 160px 1fr; }
-  .card { width: 52px; height: 78px; font-size: 0.85rem; }
+  .card { width: 60px; height: 90px; font-size: 0.85rem; }
   #bid-grid { grid-template-columns: repeat(5, 44px); }
 }
 
