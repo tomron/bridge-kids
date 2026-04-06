@@ -1,0 +1,423 @@
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #1a6b2a;  /* felt green */
+  color: #fff;
+  min-height: 100vh;
+}
+
+.hidden { display: none !important; }
+
+/* ── App layout ── */
+#app {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 100vh;
+}
+
+/* ── Side panel ── */
+#side-panel {
+  background: #0f3d16;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#side-panel h1 {
+  font-size: 1.1rem;
+  text-align: center;
+  color: #ffd700;
+  line-height: 1.3;
+}
+
+.section-label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9dc9a2;
+  margin-bottom: 6px;
+}
+
+/* Difficulty buttons */
+#difficulty-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.diff-btn {
+  padding: 7px 8px;
+  border: 2px solid #4a9955;
+  background: transparent;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.diff-btn:hover { background: #2a6b32; }
+.diff-btn.active { background: #2e8b45; border-color: #ffd700; color: #ffd700; font-weight: bold; }
+
+/* Contract info */
+#contract-display {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+#trump-display {
+  font-size: 0.85rem;
+  color: #ccc;
+  margin-top: 2px;
+}
+
+/* Trick & score counts */
+#trick-counts, #session-scores {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+
+#trick-counts span, #session-scores span {
+  font-weight: bold;
+  color: #ffd700;
+}
+
+/* Action buttons */
+#action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+#action-buttons button {
+  padding: 10px 8px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: filter 0.15s;
+}
+
+#action-buttons button:hover { filter: brightness(1.15); }
+
+#new-game-btn { background: #ffd700; color: #1a3a00; }
+#help-btn { background: #4a9edb; color: #fff; }
+#new-session-btn { background: #555; color: #ccc; font-size: 0.78rem; padding: 6px 8px; }
+
+/* ── Main table ── */
+#table {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 16px;
+  gap: 12px;
+  min-height: 100vh;
+}
+
+/* ── Hand areas ── */
+.hand-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.hand-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9dc9a2;
+}
+
+.cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* ── Cards ── */
+.card {
+  width: 64px;
+  height: 96px;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  background: #fff;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4px 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: default;
+  user-select: none;
+  position: relative;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.card .rank { font-size: 0.95rem; line-height: 1; }
+.card .suit { font-size: 1.1rem; line-height: 1; }
+.card .rank-bottom { font-size: 0.95rem; line-height: 1; text-align: right; transform: rotate(180deg); }
+
+.card.red { color: #cc0000; border-color: #cc9999; }
+
+.card.face-down {
+  background: repeating-linear-gradient(
+    135deg,
+    #1a5276,
+    #1a5276 4px,
+    #2980b9 4px,
+    #2980b9 8px
+  );
+  border-color: #1a5276;
+  cursor: default;
+}
+
+/* Legal / playable cards */
+.card.legal {
+  cursor: pointer;
+  border-color: #ffd700;
+  box-shadow: 0 0 8px rgba(255,215,0,0.6);
+}
+
+.card.legal:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 6px 16px rgba(255,215,0,0.8);
+}
+
+/* Disabled (not legal to play) */
+.card.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Center area ── */
+#center-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Start screen ── */
+#start-screen {
+  text-align: center;
+  color: #d0f0d8;
+  line-height: 2;
+}
+
+#start-screen h2 { font-size: 1.5rem; color: #ffd700; margin-bottom: 8px; }
+
+/* ── Trick area ── */
+#trick-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#trick-cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.trick-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trick-slot {
+  width: 72px;
+  height: 104px;
+  border-radius: 8px;
+  border: 2px dashed rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trick-slot .card {
+  width: 68px;
+  height: 100px;
+}
+
+#trick-center-label {
+  width: 60px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #9dc9a2;
+}
+
+#thinking-indicator {
+  font-size: 0.85rem;
+  color: #ffd700;
+  animation: pulse 0.9s infinite alternate;
+}
+
+@keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+
+/* ── Bidding area ── */
+#bidding-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+#auction-history {
+  font-size: 0.8rem;
+  color: #cce8cc;
+  min-height: 24px;
+  text-align: center;
+}
+
+#bid-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 52px);
+  grid-template-rows: repeat(7, 40px);
+  gap: 4px;
+}
+
+.bid-btn {
+  border: 2px solid #4a9955;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: bold;
+  transition: background 0.12s;
+}
+
+.bid-btn:hover:not(.bid-illegal) { background: rgba(255,255,255,0.22); }
+
+.bid-btn.bid-illegal {
+  opacity: 0.25;
+  cursor: not-allowed;
+  border-color: #333;
+}
+
+.bid-btn .bid-suit { font-size: 1rem; }
+.bid-btn.bid-red { color: #ff8888; border-color: #994444; }
+
+#special-bids {
+  display: flex;
+  gap: 8px;
+}
+
+.bid-special {
+  padding: 8px 18px;
+  border: 2px solid #4a9955;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: background 0.12s;
+}
+
+.bid-special:hover { background: rgba(255,255,255,0.22); }
+
+#double-btn { border-color: #cc6666; color: #ff9999; }
+#redouble-btn { border-color: #cc9900; color: #ffd700; }
+
+/* Turn indicator */
+#player-hand.my-turn .cards-row {
+  filter: drop-shadow(0 0 8px rgba(255,215,0,0.5));
+}
+
+/* ── Result area ── */
+#result-area {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+#result-message {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+#result-score {
+  font-size: 1rem;
+  color: #cce8cc;
+  line-height: 1.8;
+}
+
+#next-hand-btn {
+  padding: 12px 28px;
+  background: #ffd700;
+  color: #1a3a00;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+#next-hand-btn:hover { filter: brightness(1.1); }
+
+/* ── Hint overlay ── */
+#hint-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#hint-box {
+  background: #0f3d16;
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  padding: 24px 28px;
+  max-width: 360px;
+  width: 90%;
+  position: relative;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #e8f8ea;
+}
+
+#hint-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  #app { grid-template-columns: 160px 1fr; }
+  .card { width: 52px; height: 78px; font-size: 0.85rem; }
+  #bid-grid { grid-template-columns: repeat(5, 44px); }
+}
+
+@media (max-width: 768px) {
+  #app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  #side-panel { flex-direction: row; flex-wrap: wrap; padding: 10px; gap: 10px; }
+  #side-panel h1 { width: 100%; }
+  #action-buttons { flex-direction: row; margin-top: 0; }
+}

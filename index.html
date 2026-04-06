@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bridge for Kids</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Side panel -->
+    <aside id="side-panel">
+      <h1>Bridge for Kids</h1>
+
+      <div id="difficulty-section">
+        <label class="section-label">Difficulty</label>
+        <div id="difficulty-selector">
+          <button class="diff-btn active" data-difficulty="easy">Easy</button>
+          <button class="diff-btn" data-difficulty="medium">Medium</button>
+          <button class="diff-btn" data-difficulty="hard">Hard</button>
+        </div>
+      </div>
+
+      <div id="contract-info" class="hidden">
+        <label class="section-label">Contract</label>
+        <div id="contract-display">—</div>
+        <div id="trump-display"></div>
+      </div>
+
+      <div id="score-panel">
+        <label class="section-label">Tricks</label>
+        <div id="trick-counts">
+          <div>You: <span id="player-tricks">0</span></div>
+          <div>Computer: <span id="computer-tricks">0</span></div>
+        </div>
+        <label class="section-label">Session Score</label>
+        <div id="session-scores">
+          <div>You: <span id="player-score">0</span></div>
+          <div>Computer: <span id="computer-score">0</span></div>
+        </div>
+      </div>
+
+      <div id="action-buttons">
+        <button id="new-game-btn">New Game</button>
+        <button id="help-btn">Help ❓</button>
+        <button id="new-session-btn">New Session</button>
+      </div>
+    </aside>
+
+    <!-- Main table -->
+    <main id="table">
+      <!-- Computer hand (top) -->
+      <div id="computer-hand" class="hand-area">
+        <div class="hand-label">Computer</div>
+        <div id="computer-cards" class="cards-row"></div>
+      </div>
+
+      <!-- Center: bidding or trick area -->
+      <div id="center-area">
+        <!-- Bidding box -->
+        <div id="bidding-area" class="hidden">
+          <div id="auction-history"></div>
+          <div id="bid-box">
+            <div id="bid-grid"></div>
+            <div id="special-bids">
+              <button id="pass-btn" class="bid-special">Pass</button>
+              <button id="double-btn" class="bid-special hidden">Double</button>
+              <button id="redouble-btn" class="bid-special hidden">Redouble</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trick area -->
+        <div id="trick-area" class="hidden">
+          <div id="trick-cards">
+            <div class="trick-slot" id="trick-north"></div>
+            <div class="trick-row">
+              <div class="trick-slot" id="trick-west"></div>
+              <div id="trick-center-label"></div>
+              <div class="trick-slot" id="trick-east"></div>
+            </div>
+            <div class="trick-slot" id="trick-south"></div>
+          </div>
+          <div id="thinking-indicator" class="hidden">Computer is thinking…</div>
+        </div>
+
+        <!-- Result screen -->
+        <div id="result-area" class="hidden">
+          <div id="result-message"></div>
+          <div id="result-score"></div>
+          <button id="next-hand-btn">Next Hand</button>
+        </div>
+
+        <!-- Start screen -->
+        <div id="start-screen">
+          <h2>Welcome to Bridge for Kids!</h2>
+          <p>Play Contract Bridge against the computer.</p>
+          <p>Choose a difficulty and press <strong>New Game</strong> to start.</p>
+        </div>
+      </div>
+
+      <!-- Player hand (bottom) -->
+      <div id="player-hand" class="hand-area">
+        <div class="hand-label">You</div>
+        <div id="player-cards" class="cards-row"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Hint overlay -->
+  <div id="hint-overlay" class="hidden">
+    <div id="hint-box">
+      <button id="hint-close">✕</button>
+      <div id="hint-text"></div>
+    </div>
+  </div>
+
+  <script src="js/cards.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/hints.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
