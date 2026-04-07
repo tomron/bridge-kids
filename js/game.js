@@ -222,22 +222,24 @@ function completeTrick() {
   gameState.leader = winnerPosition;
   gameState.currentPlayer = winnerPosition;
 
-  // Animate cards flying toward the winner before clearing
+  // Pause so players can see all 4 cards, then animate toward winner
   const flyClass = ['fly-south', 'fly-west', 'fly-north', 'fly-east'][winnerPosition];
-  TRICK_SLOTS.forEach(id => {
-    const slot = document.getElementById(id);
-    if (slot) slot.classList.add(flyClass);
-  });
-
   setTimeout(() => {
-    gameState.currentTrick = [];
-    if (gameState.hands[0].length === 0) {
-      finishHand();
-    } else {
-      render();
-      scheduleComputerPlay();
-    }
-  }, 420);
+    TRICK_SLOTS.forEach(id => {
+      const slot = document.getElementById(id);
+      if (slot) slot.classList.add(flyClass);
+    });
+
+    setTimeout(() => {
+      gameState.currentTrick = [];
+      if (gameState.hands[0].length === 0) {
+        finishHand();
+      } else {
+        render();
+        scheduleComputerPlay();
+      }
+    }, 420);
+  }, 800);
 }
 
 function scheduleComputerPlay() {
