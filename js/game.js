@@ -218,7 +218,7 @@ function completeTrick() {
   const winnerIdx = trickWinner(trick, ledSuit, trump);
   const winnerPosition = trick[winnerIdx].player;
 
-  const side = winnerPosition === 0 ? 0 : 1;
+  const side = winnerPosition % 2 === 0 ? 0 : 1; // 0,2=NS; 1,3=EW
   gameState.trickCounts[side]++;
 
   gameState.leader = winnerPosition;
@@ -260,7 +260,7 @@ function scheduleComputerPlay() {
 }
 
 function finishHand() {
-  const declarerSide = gameState.contract.declarer === 0 ? 0 : 1;
+  const declarerSide = gameState.contract.declarer % 2 === 0 ? 0 : 1; // 0,2=NS; 1,3=EW
   const tricksMade = gameState.trickCounts[declarerSide];
   const { points, message } = calculateScore(
     gameState.contract, tricksMade,
