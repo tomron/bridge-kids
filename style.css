@@ -269,10 +269,17 @@ body.at-start #new-game-btn {
 /* Overlap horizontal cards so 13 fit in one row */
 .cards-row .card {
   margin-right: -18px;
+  will-change: transform;
+  /* Ensure later cards sit on top by default, hover raises further */
 }
 
 .cards-row .card:last-child {
   margin-right: 0;
+}
+
+/* Raise hovered card well above all siblings */
+.cards-row .card:hover {
+  z-index: 10;
 }
 
 /* ── Cards ── */
@@ -296,6 +303,7 @@ body.at-start #new-game-btn {
   transition: transform 0.15s, box-shadow 0.15s;
   box-shadow: var(--card-shadow);
   overflow: hidden;
+  will-change: transform;
 }
 
 /* Large center suit symbol */
@@ -357,7 +365,7 @@ body.at-start #new-game-btn {
 .card.legal:hover {
   transform: translateY(-12px);
   box-shadow: 0 10px 20px var(--gold-glow), var(--card-shadow);
-  z-index: 2;
+  z-index: 10;
 }
 
 /* Disabled (not legal to play) */
