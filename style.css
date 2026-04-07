@@ -446,6 +446,25 @@ body.at-start #new-game-btn {
   height: 104px;
 }
 
+/* ── Trick win animations ── */
+@keyframes fly-south {
+  to { transform: translateY(140px); opacity: 0; }
+}
+@keyframes fly-north {
+  to { transform: translateY(-140px); opacity: 0; }
+}
+@keyframes fly-west {
+  to { transform: translateX(-200px); opacity: 0; }
+}
+@keyframes fly-east {
+  to { transform: translateX(200px); opacity: 0; }
+}
+
+.trick-slot.fly-south .card { animation: fly-south 0.4s ease-in forwards; }
+.trick-slot.fly-north .card { animation: fly-north 0.4s ease-in forwards; }
+.trick-slot.fly-west  .card { animation: fly-west  0.4s ease-in forwards; }
+.trick-slot.fly-east  .card { animation: fly-east  0.4s ease-in forwards; }
+
 #trick-center-label {
   width: 64px;
   text-align: center;
