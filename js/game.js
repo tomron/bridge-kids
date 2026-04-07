@@ -25,6 +25,7 @@ const gameState = {
   sessionScores: [0, 0],     // [player, computer]
   currentPlayer: 0,          // whose turn it is
   resultData: null,
+  seq: 0,                    // monotonic counter for multiplayer state sync
 };
 
 // ── Central dispatch ──────────────────────────────────────────────────────────
@@ -64,7 +65,45 @@ function dispatch(action) {
       break;
   }
   render();
+
+  // Broadcast state if host in multiplayer
+  if (window.MP && window.MP.isHost && window.MP.gameMode !== 'solo') {
+    gameState.seq = (gameState.seq || 0) + 1;
+    window.MP.broadcastState(gameState);
+  }
 }
+
+// ── Perspective rotation ──────────────────────────────────────────────────────
+// localSeat: the canonical seat index this client controls (0=South default)
+// rotateIndex(pos): maps canonical position to display slot given localSeat
+// Display slots: 0=South, 1=West, 2=North, 3=East
+function rotateIndex(pos) {
+  const localSeat = (window.MP && window.MP.localSeat != null) ? window.MP.localSeat : 0;
+  return (pos - localSeat + 4) % 4;
+}
+
+// Map display slot (0=South,1=West,2=North,3=East) back to canonical position
+function displayToCanonical(displaySlot) {
+  const localSeat = (window.MP && window.MP.localSeat != null) ? window.MP.localSeat : 0;
+  return (displaySlot + localSeat) % 4;
+}
+
+// ── Toast notifications ───────────────────────────────────────────────────────
+function showToast(message) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  container.appendChild(toast);
+  // Trigger animation
+  requestAnimationFrame(() => { toast.classList.add('toast-show'); });
+  setTimeout(() => {
+    toast.classList.remove('toast-show');
+    setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 400);
+  }, 3500);
+}
+window.showToast = showToast;
 
 // ── Game setup ────────────────────────────────────────────────────────────────
 function startNewGame() {
@@ -117,17 +156,29 @@ function handleBid(bid) {
 
   gameState.currentPlayer = (gameState.currentPlayer + 1) % 4;
 
-  // Computer bids (positions 1, 2, 3)
-  while (gameState.currentPlayer !== 0 && gameState.phase === 'bidding') {
-    const computerHand = gameState.hands[gameState.currentPlayer];
-    const computerBid = aiBid(computerHand, gameState.auction, gameState.currentPlayer, gameState);
-    gameState.auction.push({ position: gameState.currentPlayer, bid: computerBid });
+  // Computer bids (only if host/solo, only for non-human seats)
+  const _isHost = !window.MP || window.MP.isHost;
+  const _humanSeats = window.MP ? Object.keys(window.MP.seatMap).filter(k => window.MP.seatMap[k].isHuman).map(Number) : [0];
+  const _isSolo = !window.MP || window.MP.gameMode === 'solo';
 
-    if (isAuctionOver()) {
-      finalizeContract();
-      return;
+  if (_isHost) {
+    while (gameState.phase === 'bidding') {
+      const cp = gameState.currentPlayer;
+      // Stop if it's a human seat
+      if (_humanSeats.includes(cp) && !_isSolo) break;
+      // In solo mode, stop at player seat (0)
+      if (_isSolo && cp === 0) break;
+
+      const computerHand = gameState.hands[cp];
+      const computerBid = aiBid(computerHand, gameState.auction, cp, gameState);
+      gameState.auction.push({ position: cp, bid: computerBid });
+
+      if (isAuctionOver()) {
+        finalizeContract();
+        return;
+      }
+      gameState.currentPlayer = (gameState.currentPlayer + 1) % 4;
     }
-    gameState.currentPlayer = (gameState.currentPlayer + 1) % 4;
   }
 }
 
@@ -228,7 +279,9 @@ function completeTrick() {
   trickAnimating = true;
 
   // Pause so players can see all 4 cards, then animate toward winner
-  const flyClass = ['fly-south', 'fly-west', 'fly-north', 'fly-east'][winnerPosition];
+  // Winner display slot is based on rotated position
+  const winnerDisplaySlot = rotateIndex(winnerPosition);
+  const flyClass = ['fly-south', 'fly-west', 'fly-north', 'fly-east'][winnerDisplaySlot];
   setTimeout(() => {
     TRICK_SLOTS.forEach(id => {
       const slot = document.getElementById(id);
@@ -249,14 +302,32 @@ function completeTrick() {
 }
 
 function scheduleComputerPlay() {
-  if (gameState.currentPlayer !== 0 && gameState.phase === 'play') {
-    const delay = 300 + Math.random() * 500;
-    setTimeout(() => {
-      if (gameState.phase !== 'play' || trickAnimating) return;
-      const card = aiPlayCard(gameState.hands[gameState.currentPlayer], gameState.currentTrick, gameState);
-      dispatch({ type: 'PLAY_CARD', card, player: gameState.currentPlayer });
-    }, delay);
-  }
+  const isHost = !window.MP || window.MP.isHost;
+  const isSolo = !window.MP || window.MP.gameMode === 'solo';
+  const localSeat = (window.MP && window.MP.localSeat != null) ? window.MP.localSeat : 0;
+  const humanSeats = window.MP ? Object.keys(window.MP.seatMap).filter(k => window.MP.seatMap[k].isHuman).map(Number) : [0];
+
+  const cp = gameState.currentPlayer;
+
+  // Only play if it's not the local human's turn
+  if (cp === localSeat && !isSolo) return;
+  // In solo mode, only play for non-player-0 seats
+  if (isSolo && cp === 0) return;
+
+  if (gameState.phase !== 'play') return;
+
+  // Only host runs AI
+  if (!isHost) return;
+
+  // Only play for computer seats (seats not occupied by humans, unless solo)
+  if (!isSolo && humanSeats.includes(cp)) return;
+
+  const delay = 300 + Math.random() * 500;
+  setTimeout(() => {
+    if (gameState.phase !== 'play' || trickAnimating) return;
+    const card = aiPlayCard(gameState.hands[gameState.currentPlayer], gameState.currentTrick, gameState);
+    dispatch({ type: 'PLAY_CARD', card, player: gameState.currentPlayer });
+  }, delay);
 }
 
 function finishHand() {
@@ -267,7 +338,9 @@ function finishHand() {
     gameState.contract.doubled, gameState.contract.redoubled
   );
 
-  const declarerIsPlayer = gameState.contract.declarer === 0;
+  const localSeat = (window.MP && window.MP.localSeat != null) ? window.MP.localSeat : 0;
+  // "player" means the local player's side (NS if localSeat is 0/2, EW if 1/3)
+  const declarerIsPlayer = gameState.contract.declarer % 2 === localSeat % 2;
   if (points > 0) {
     gameState.sessionScores[declarerIsPlayer ? 0 : 1] += points;
   } else {
@@ -300,6 +373,31 @@ function render() {
   renderContractInfo();
   renderDifficultyButtons();
   renderThinkingIndicator();
+  renderConnectionStatus();
+}
+
+function renderConnectionStatus() {
+  const statusEl = document.getElementById('connection-status');
+  if (!statusEl) return;
+  const mp = window.MP;
+  const isMultiplayer = mp && mp.gameMode !== 'solo';
+  statusEl.classList.toggle('hidden', !isMultiplayer || gameState.phase === 'start');
+
+  if (!isMultiplayer) return;
+
+  document.querySelectorAll('.conn-dot').forEach(dot => {
+    const seat = parseInt(dot.dataset.seat, 10);
+    const info = mp.seatMap[seat];
+    if (info && info.isHuman && !info.disconnected) {
+      dot.classList.add('connected');
+      dot.classList.remove('disconnected');
+    } else if (info && info.isHuman && info.disconnected) {
+      dot.classList.remove('connected');
+      dot.classList.add('disconnected');
+    } else {
+      dot.classList.remove('connected', 'disconnected');
+    }
+  });
 }
 
 function renderPhase() {
@@ -323,67 +421,211 @@ function renderPhase() {
 }
 
 function renderHands() {
-  // South (player) — face-up
+  const localSeat = (window.MP && window.MP.localSeat != null) ? window.MP.localSeat : 0;
+
+  // Canonical positions for each display slot (South=0, West=1, North=2, East=3 display slots)
+  const southCanon = displayToCanonical(0); // local player's canonical seat
+  const northCanon = displayToCanonical(2);
+  const westCanon  = displayToCanonical(1);
+  const eastCanon  = displayToCanonical(3);
+
+  // Determine dummy: partner of declarer, shown face-up after first lead
+  const dummyCanon = gameState.contract
+    ? (gameState.contract.declarer + 2) % 4
+    : -1;
+  // Dummy is visible after first card of first trick is played (leader has led)
+  const dummyVisible = gameState.phase === 'play' && gameState.contract !== null;
+
+  // ── South (local player) — face-up ──────────────────────────────────────
   const playerCards = document.getElementById('player-cards');
   clearElement(playerCards);
-  const playerHand = sortHand(gameState.hands[0]);
+  const southHand = sortHand(gameState.hands[southCanon]);
 
-  const isPlayerTurn = gameState.phase === 'play' && gameState.currentPlayer === 0;
+  const isPlayerTurn = gameState.phase === 'play' && gameState.currentPlayer === southCanon;
   document.getElementById('player-hand').classList.toggle('my-turn', isPlayerTurn);
 
+  // Update South label
+  const southLabel = document.querySelector('#player-hand .hand-label');
+  if (southLabel) {
+    const isSolo = !window.MP || window.MP.gameMode === 'solo';
+    const southName = isSolo ? 'You (South)' : _getSeatDisplayName(southCanon);
+    southLabel.textContent = '';
+    const badge = document.createElement('span');
+    badge.className = 'team-badge ' + (southCanon % 2 === 0 ? 'ns-badge' : 'ew-badge');
+    badge.textContent = southCanon % 2 === 0 ? 'NS' : 'EW';
+    southLabel.appendChild(badge);
+    southLabel.appendChild(document.createTextNode(' ' + southName));
+  }
+
   const ledSuit = gameState.currentTrick.length > 0 ? gameState.currentTrick[0].card.suit : null;
-  const legal = isPlayerTurn ? legalPlays(gameState.hands[0], ledSuit) : [];
+  const legal = isPlayerTurn ? legalPlays(gameState.hands[southCanon], ledSuit) : [];
   const legalSet = new Set(legal.map(c => c.rank + c.suit));
 
-  for (const card of playerHand) {
-    const el = createCardElement(card);
+  for (const card of southHand) {
+    const cardEl = createCardElement(card);
     if (isPlayerTurn) {
       if (legalSet.has(card.rank + card.suit)) {
-        el.classList.add('legal');
-        el.addEventListener('click', () => dispatch({ type: 'PLAY_CARD', card, player: 0 }));
+        cardEl.classList.add('legal');
+        cardEl.addEventListener('click', () => {
+          if (window.MP && window.MP.gameMode !== 'solo' && !window.MP.isHost) {
+            // Guest: broadcast action to host
+            window.MP.broadcastAction({ type: 'PLAY_CARD', card, player: southCanon });
+          } else {
+            dispatch({ type: 'PLAY_CARD', card, player: southCanon });
+          }
+        });
       } else {
-        el.classList.add('disabled');
+        cardEl.classList.add('disabled');
       }
     }
-    playerCards.appendChild(el);
+    playerCards.appendChild(cardEl);
   }
 
-  // North (position 2) — face-down, horizontal
+  // ── North (display slot 2 = opposite) ──────────────────────────────────
   const northCards = document.getElementById('north-cards');
   clearElement(northCards);
-  for (let i = 0; i < gameState.hands[2].length; i++) {
-    const el = document.createElement('div');
-    el.className = 'card face-down';
-    northCards.appendChild(el);
+  _updateHandLabel('north-hand', northCanon, 'ns-badge');
+
+  const showNorthFaceUp = dummyVisible && northCanon === dummyCanon;
+  if (showNorthFaceUp) {
+    const northHand = sortHand(gameState.hands[northCanon]);
+    for (const card of northHand) {
+      const cardEl = createCardElement(card);
+      // Declarer can click dummy if it's declarer's turn
+      if (gameState.currentPlayer === northCanon && northCanon === dummyCanon) {
+        const declarerCanon = gameState.contract.declarer;
+        if (declarerCanon === southCanon) {
+          cardEl.classList.add('legal');
+          cardEl.addEventListener('click', () => {
+            if (window.MP && window.MP.gameMode !== 'solo' && !window.MP.isHost) {
+              window.MP.broadcastAction({ type: 'PLAY_CARD', card, player: northCanon });
+            } else {
+              dispatch({ type: 'PLAY_CARD', card, player: northCanon });
+            }
+          });
+        }
+      }
+      northCards.appendChild(cardEl);
+    }
+  } else {
+    for (let i = 0; i < gameState.hands[northCanon].length; i++) {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card face-down';
+      northCards.appendChild(cardEl);
+    }
   }
 
-  // West (position 1) — face-down, vertical column
+  // ── West (display slot 1 = left) ────────────────────────────────────────
   const westCards = document.getElementById('west-cards');
   clearElement(westCards);
-  for (let i = 0; i < gameState.hands[1].length; i++) {
-    const el = document.createElement('div');
-    el.className = 'card face-down';
-    westCards.appendChild(el);
+  _updateHandLabel('west-hand', westCanon, westCanon % 2 === 0 ? 'ns-badge' : 'ew-badge');
+
+  const showWestFaceUp = dummyVisible && westCanon === dummyCanon;
+  if (showWestFaceUp) {
+    const westHand = sortHand(gameState.hands[westCanon]);
+    for (const card of westHand) {
+      const cardEl = createCardElement(card);
+      if (gameState.currentPlayer === westCanon && gameState.contract.declarer === southCanon) {
+        cardEl.classList.add('legal');
+        cardEl.addEventListener('click', () => {
+          if (window.MP && window.MP.gameMode !== 'solo' && !window.MP.isHost) {
+            window.MP.broadcastAction({ type: 'PLAY_CARD', card, player: westCanon });
+          } else {
+            dispatch({ type: 'PLAY_CARD', card, player: westCanon });
+          }
+        });
+      }
+      westCards.appendChild(cardEl);
+    }
+  } else {
+    for (let i = 0; i < gameState.hands[westCanon].length; i++) {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card face-down';
+      westCards.appendChild(cardEl);
+    }
   }
 
-  // East (position 3) — face-down, vertical column
+  // ── East (display slot 3 = right) ───────────────────────────────────────
   const eastCards = document.getElementById('east-cards');
   clearElement(eastCards);
-  for (let i = 0; i < gameState.hands[3].length; i++) {
-    const el = document.createElement('div');
-    el.className = 'card face-down';
-    eastCards.appendChild(el);
+  _updateHandLabel('east-hand', eastCanon, eastCanon % 2 === 0 ? 'ns-badge' : 'ew-badge');
+
+  const showEastFaceUp = dummyVisible && eastCanon === dummyCanon;
+  if (showEastFaceUp) {
+    const eastHand = sortHand(gameState.hands[eastCanon]);
+    for (const card of eastHand) {
+      const cardEl = createCardElement(card);
+      if (gameState.currentPlayer === eastCanon && gameState.contract.declarer === southCanon) {
+        cardEl.classList.add('legal');
+        cardEl.addEventListener('click', () => {
+          if (window.MP && window.MP.gameMode !== 'solo' && !window.MP.isHost) {
+            window.MP.broadcastAction({ type: 'PLAY_CARD', card, player: eastCanon });
+          } else {
+            dispatch({ type: 'PLAY_CARD', card, player: eastCanon });
+          }
+        });
+      }
+      eastCards.appendChild(cardEl);
+    }
+  } else {
+    for (let i = 0; i < gameState.hands[eastCanon].length; i++) {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card face-down';
+      eastCards.appendChild(cardEl);
+    }
   }
 }
 
+function _getSeatDisplayName(canonPos) {
+  const mp = window.MP;
+  if (!mp || mp.gameMode === 'solo') {
+    return canonPos === 0 ? 'You (South)' : POSITION_NAMES[canonPos];
+  }
+  const info = mp.seatMap[canonPos];
+  if (info && info.isHuman) {
+    return info.name || POSITION_NAMES[canonPos];
+  }
+  return POSITION_NAMES[canonPos] + ' (CPU)';
+}
+
+function _updateHandLabel(handId, canonPos, badgeClass) {
+  const handEl = document.getElementById(handId);
+  if (!handEl) return;
+  const labelEl = handEl.querySelector('.hand-label');
+  if (!labelEl) return;
+  const isSolo = !window.MP || window.MP.gameMode === 'solo';
+  const name = isSolo ? POSITION_NAMES[canonPos] : _getSeatDisplayName(canonPos);
+  const team = canonPos % 2 === 0 ? 'NS' : 'EW';
+  const actualBadge = canonPos % 2 === 0 ? 'ns-badge' : 'ew-badge';
+  labelEl.textContent = '';
+  const badge = document.createElement('span');
+  badge.className = 'team-badge ' + actualBadge;
+  badge.textContent = team;
+  labelEl.appendChild(badge);
+  labelEl.appendChild(document.createTextNode(' ' + name));
+}
+
 function renderTrickArea() {
-  for (const pos of [0, 1, 2, 3]) {
-    const slot = document.getElementById(TRICK_SLOTS[pos]);
+  // TRICK_SLOTS[0..3] = south, west, north, east display slots
+  for (const displaySlot of [0, 1, 2, 3]) {
+    const slot = document.getElementById(TRICK_SLOTS[displaySlot]);
     // Clear any leftover fly classes from previous trick animation
     slot.classList.remove('fly-south', 'fly-west', 'fly-north', 'fly-east');
     clearElement(slot);
-    const played = gameState.currentTrick.find(t => t.player === pos);
+    // Find which canonical position maps to this display slot
+    const canonPos = displayToCanonical(displaySlot);
+    const played = gameState.currentTrick.find(t => t.player === canonPos);
     if (played) slot.appendChild(createCardElement(played.card));
+  }
+}
+
+function _dispatchBid(bid) {
+  const isSolo = !window.MP || window.MP.gameMode === 'solo';
+  if (!isSolo && window.MP && !window.MP.isHost) {
+    // Guest: broadcast action to host
+    window.MP.broadcastAction({ type: 'BID', bid, player: window.MP.localSeat });
+  } else {
+    dispatch({ type: 'BID', bid });
   }
 }
 
@@ -391,6 +633,12 @@ function renderBidBox() {
   const grid = document.getElementById('bid-grid');
   clearElement(grid);
   const highBid = getHighestBidFromAuction();
+
+  // Disable bidding UI if it's not the local player's turn
+  const localSeat = (window.MP && window.MP.localSeat != null) ? window.MP.localSeat : 0;
+  const isLocalTurn = gameState.currentPlayer === localSeat;
+  const isSolo = !window.MP || window.MP.gameMode === 'solo';
+  const biddingEnabled = isSolo ? (gameState.currentPlayer === 0) : isLocalTurn;
 
   for (let level = 1; level <= 7; level++) {
     for (const suit of DENOMS) {
@@ -406,32 +654,34 @@ function renderBidBox() {
       btn.appendChild(levelSpan);
       btn.appendChild(suitSpan);
 
-      const illegal = highBid && !isLegalBid({ level, suit }, highBid);
+      const illegal = (highBid && !isLegalBid({ level, suit }, highBid)) || !biddingEnabled;
       if (illegal) {
         btn.classList.add('bid-illegal');
         btn.disabled = true;
       } else {
-        btn.addEventListener('click', () => dispatch({ type: 'BID', bid: { level, suit } }));
+        btn.addEventListener('click', () => _dispatchBid({ level, suit }));
       }
       grid.appendChild(btn);
     }
   }
 
-  document.getElementById('pass-btn').onclick = () => dispatch({ type: 'BID', bid: 'pass' });
+  const passBtn = document.getElementById('pass-btn');
+  passBtn.disabled = !biddingEnabled;
+  passBtn.onclick = biddingEnabled ? () => _dispatchBid('pass') : null;
 
   const doubleBtn = document.getElementById('double-btn');
   const redoubleBtn = document.getElementById('redouble-btn');
   doubleBtn.classList.add('hidden');
   redoubleBtn.classList.add('hidden');
 
-  if (gameState.activeDifficulty === 'hard') {
+  if (gameState.activeDifficulty === 'hard' && biddingEnabled) {
     if (canPlayerDouble()) {
       doubleBtn.classList.remove('hidden');
-      doubleBtn.onclick = () => dispatch({ type: 'BID', bid: 'double' });
+      doubleBtn.onclick = () => _dispatchBid('double');
     }
     if (canPlayerRedouble()) {
       redoubleBtn.classList.remove('hidden');
-      redoubleBtn.onclick = () => dispatch({ type: 'BID', bid: 'redouble' });
+      redoubleBtn.onclick = () => _dispatchBid('redouble');
     }
   }
 
@@ -447,19 +697,21 @@ function renderBidBox() {
 }
 
 function canPlayerDouble() {
+  const localSeat = (window.MP && window.MP.localSeat != null) ? window.MP.localSeat : 0;
   for (let i = gameState.auction.length - 1; i >= 0; i--) {
     const b = gameState.auction[i].bid;
     if (b === 'double' || b === 'redouble') return false;
-    if (b !== 'pass') return gameState.auction[i].position !== 0;
+    if (b !== 'pass') return gameState.auction[i].position !== localSeat;
   }
   return false;
 }
 
 function canPlayerRedouble() {
+  const localSeat = (window.MP && window.MP.localSeat != null) ? window.MP.localSeat : 0;
   for (let i = gameState.auction.length - 1; i >= 0; i--) {
     const b = gameState.auction[i].bid;
     if (b === 'redouble') return false;
-    if (b === 'double') return gameState.auction[i].position !== 0;
+    if (b === 'double') return gameState.auction[i].position !== localSeat;
     if (b !== 'pass') return false;
   }
   return false;
@@ -508,7 +760,19 @@ function renderDifficultyButtons() {
 
 function renderThinkingIndicator() {
   const ind = document.getElementById('thinking-indicator');
-  const thinking = gameState.phase === 'play' && gameState.currentPlayer !== 0;
+  const localSeat = (window.MP && window.MP.localSeat != null) ? window.MP.localSeat : 0;
+  const humanSeats = window.MP ? Object.keys(window.MP.seatMap).filter(k => window.MP.seatMap[k].isHuman).map(Number) : [localSeat];
+  const isSolo = !window.MP || window.MP.gameMode === 'solo';
+
+  let thinking = false;
+  if (gameState.phase === 'play') {
+    if (isSolo) {
+      thinking = gameState.currentPlayer !== 0;
+    } else {
+      // Show thinking if it's a computer seat's turn (not a human seat)
+      thinking = !humanSeats.includes(gameState.currentPlayer);
+    }
+  }
   ind.classList.toggle('hidden', !thinking);
 }
 
@@ -563,6 +827,57 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.diff-btn').forEach(btn => {
     btn.addEventListener('click', () => dispatch({ type: 'SET_DIFFICULTY', difficulty: btn.dataset.difficulty }));
   });
+
+  // Solo lobby button
+  const lobbySoloBtn = document.getElementById('lobby-solo-btn');
+  if (lobbySoloBtn) {
+    lobbySoloBtn.addEventListener('click', () => {
+      if (window.MP) window.MP.gameMode = 'solo';
+      document.getElementById('lobby-overlay').classList.add('hidden');
+      dispatch({ type: 'NEW_GAME' });
+    });
+  }
+
+  // Register MP callbacks once MP is ready
+  function registerMPCallbacks() {
+    if (!window.MP) return;
+
+    window.MP.onStateReceived((msg) => {
+      if (!window.MP.isHost && msg.seq > (gameState.seq || 0)) {
+        Object.assign(gameState, msg.state);
+        render();
+      }
+    });
+
+    window.MP.onActionReceived((msg) => {
+      if (window.MP.isHost) {
+        const senderSeat = msg.senderSeat;
+        const action = msg.action;
+        if (action.type === 'BID') {
+          if (gameState.currentPlayer === senderSeat) {
+            dispatch(action);
+          }
+        } else if (action.type === 'PLAY_CARD') {
+          if (action.player === senderSeat) {
+            dispatch(action);
+          }
+        }
+      }
+    });
+
+    window.MP.onSyncRequest(() => {
+      if (window.MP.isHost) {
+        window.MP.broadcastState(gameState);
+      }
+    });
+  }
+
+  // MP may be ready already (synchronous) or after async init
+  if (window.MP) {
+    registerMPCallbacks();
+  } else {
+    window.addEventListener('mp-ready', registerMPCallbacks, { once: true });
+  }
 
   render();
   initTutorial();

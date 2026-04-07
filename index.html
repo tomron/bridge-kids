@@ -292,11 +292,65 @@
   </div><!-- /#tutorial-modal -->
 </div><!-- /#tutorial-overlay -->
 
+  <!-- Lobby overlay -->
+  <div id="lobby-overlay" class="hidden">
+    <div id="lobby-modal">
+      <h2>Bridge for Kids</h2>
+      <!-- Mode selector -->
+      <div id="mode-selector">
+        <button class="mode-btn active" data-mode="solo">Single Player</button>
+        <button class="mode-btn" data-mode="2player">2 Players Online</button>
+        <button class="mode-btn" data-mode="4player">4 Players Online</button>
+      </div>
+      <!-- Online options (hidden until online mode selected) -->
+      <div id="online-options" class="hidden">
+        <input id="player-name-input" type="text" placeholder="Your name (optional)" maxlength="20" autocomplete="off">
+        <div id="room-actions">
+          <button id="create-room-btn">Create Room</button>
+          <div id="join-room-section">
+            <input id="join-code-input" type="text" placeholder="Room code" maxlength="6" autocomplete="off">
+            <button id="join-room-btn">Join Room</button>
+          </div>
+        </div>
+      </div>
+      <!-- Waiting room (hidden until in a room) -->
+      <div id="waiting-room" class="hidden">
+        <div id="room-code-display"></div>
+        <div id="invite-url-display"></div>
+        <button id="copy-invite-btn">Copy Invite Link</button>
+        <div id="seat-map-display"></div>
+        <button id="start-game-btn" disabled>Start Game</button>
+        <div id="waiting-message"></div>
+      </div>
+      <!-- Multiplayer unavailable message -->
+      <div id="mp-unavailable" class="hidden">
+        Multiplayer unavailable &mdash; playing in single-player mode
+      </div>
+      <!-- Solo play button -->
+      <div id="solo-actions">
+        <button id="lobby-solo-btn">Play Single Player</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-game connection status -->
+  <div id="connection-status" class="hidden">
+    <span class="conn-dot" data-seat="0" title="South"></span>
+    <span class="conn-dot" data-seat="1" title="West"></span>
+    <span class="conn-dot" data-seat="2" title="North"></span>
+    <span class="conn-dot" data-seat="3" title="East"></span>
+  </div>
+
+  <!-- Toast notifications -->
+  <div id="toast-container"></div>
+
   <script src="js/cards.js"></script>
   <script src="js/ai.js"></script>
   <script src="js/scoring.js"></script>
   <script src="js/hints.js"></script>
   <script src="js/tutorial.js"></script>
+  <script type="module" src="js/multiplayer.js"></script>
+  <script src="js/lobby.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>
