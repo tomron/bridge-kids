@@ -192,7 +192,7 @@ function createRoom(mode) {
   MP.gameMode = mode;
   // Add ourselves to seat map
   MP.seatMap = {
-    0: { name: MP.playerName || 'Player 1', clientKey: MP.clientKey, isHuman: true },
+    0: { name: MP.playerName || 'Player South', clientKey: MP.clientKey, isHuman: true },
   };
   // Update URL
   const url = new URL(window.location.href);
@@ -259,7 +259,8 @@ function _handleJoinRequest(payload) {
     return;
   }
 
-  MP.seatMap[nextSeat] = { name: name || ('Player ' + (nextSeat + 1)), clientKey, isHuman: true };
+  const seatNames = ['South', 'West', 'North', 'East'];
+  MP.seatMap[nextSeat] = { name: name || ('Player ' + seatNames[nextSeat]), clientKey, isHuman: true };
 
   // Broadcast updated seat map to all
   channel.send({

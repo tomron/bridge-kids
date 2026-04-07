@@ -52,7 +52,7 @@
 
       if (info) {
         if (info.isHuman) {
-          nameEl.textContent = (info.name || ('Player ' + (seatIdx + 1))) + (info.disconnected ? ' (disconnected)' : '');
+          nameEl.textContent = (info.name || ('Player ' + SEAT_NAMES[seatIdx])) + (info.disconnected ? ' (disconnected)' : '');
           nameEl.classList.add(info.disconnected ? 'seat-disconnected' : 'seat-human');
         } else {
           nameEl.textContent = 'Computer';
