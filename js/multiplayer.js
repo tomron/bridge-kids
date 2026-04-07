@@ -236,14 +236,18 @@ function _handleJoinRequest(payload) {
   if (!MP.isHost) return;
 
   const { clientKey, name } = payload;
-  const maxSeats = MP.gameMode === '4player' ? 4 : 2;
+  // In 2-player mode, humans are partners: South (0) and North (2)
+  // In 4-player mode, all seats 0-3 are available
+  const humanSeats = MP.gameMode === '4player' ? [0, 1, 2, 3] : [0, 2];
 
   // Find next available seat
   const takenSeats = Object.keys(MP.seatMap).map(Number);
   let nextSeat = -1;
-  for (let i = 0; i < maxSeats; i++) {
+  for (const i of humanSeats) {
     if (!takenSeats.includes(i)) { nextSeat = i; break; }
   }
+
+  const maxSeats = humanSeats.length;
 
   if (nextSeat === -1) {
     // Room full — reject
