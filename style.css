@@ -261,9 +261,18 @@ body.at-start #new-game-btn {
 
 .cards-row {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: 5px;
+  gap: 0;
+}
+
+/* Overlap horizontal cards so 13 fit in one row */
+.cards-row .card {
+  margin-right: -18px;
+}
+
+.cards-row .card:last-child {
+  margin-right: 0;
 }
 
 /* ── Cards ── */
@@ -341,11 +350,14 @@ body.at-start #new-game-btn {
   cursor: pointer;
   border-color: var(--gold);
   box-shadow: 0 0 10px var(--gold-glow), var(--card-shadow);
+  position: relative;
+  z-index: 1;
 }
 
 .card.legal:hover {
   transform: translateY(-12px);
   box-shadow: 0 10px 20px var(--gold-glow), var(--card-shadow);
+  z-index: 2;
 }
 
 /* Disabled (not legal to play) */
@@ -879,8 +891,8 @@ body.at-start #new-game-btn {
   .card::before { font-size: 1.8rem; }
   .card.face-down::after { font-size: 1.1rem; }
 
-  /* Cards row: tighter gap */
-  .cards-row { gap: 3px; }
+  /* Cards row: tighter overlap on mobile */
+  .cards-row .card { margin-right: -12px; }
 
   /* Trick area: shrink slots */
   .trick-slot { width: 54px; height: 74px; }
