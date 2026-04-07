@@ -5,6 +5,8 @@
 const POSITION_NAMES = ['South', 'West', 'North', 'East'];
 const TRICK_SLOTS = ['trick-south', 'trick-west', 'trick-north', 'trick-east'];
 
+let trickAnimating = false; // blocks computer plays during trick animation
+
 // Denomination order for bid legality
 const DENOMS = ['♣', '♦', '♥', '♠', 'NT'];
 function bidIndex(level, suit) { return (level - 1) * 5 + DENOMS.indexOf(suit); }
@@ -222,6 +224,9 @@ function completeTrick() {
   gameState.leader = winnerPosition;
   gameState.currentPlayer = winnerPosition;
 
+  // Block computer plays until animation completes
+  trickAnimating = true;
+
   // Pause so players can see all 4 cards, then animate toward winner
   const flyClass = ['fly-south', 'fly-west', 'fly-north', 'fly-east'][winnerPosition];
   setTimeout(() => {
@@ -231,6 +236,7 @@ function completeTrick() {
     });
 
     setTimeout(() => {
+      trickAnimating = false;
       gameState.currentTrick = [];
       if (gameState.hands[0].length === 0) {
         finishHand();
@@ -246,7 +252,7 @@ function scheduleComputerPlay() {
   if (gameState.currentPlayer !== 0 && gameState.phase === 'play') {
     const delay = 300 + Math.random() * 500;
     setTimeout(() => {
-      if (gameState.phase !== 'play') return;
+      if (gameState.phase !== 'play' || trickAnimating) return;
       const card = aiPlayCard(gameState.hands[gameState.currentPlayer], gameState.currentTrick, gameState);
       dispatch({ type: 'PLAY_CARD', card, player: gameState.currentPlayer });
     }, delay);
