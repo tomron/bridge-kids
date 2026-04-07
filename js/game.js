@@ -379,6 +379,8 @@ function renderHands() {
 function renderTrickArea() {
   for (const pos of [0, 1, 2, 3]) {
     const slot = document.getElementById(TRICK_SLOTS[pos]);
+    // Clear any leftover fly classes from previous trick animation
+    slot.classList.remove('fly-south', 'fly-west', 'fly-north', 'fly-east');
     clearElement(slot);
     const played = gameState.currentTrick.find(t => t.player === pos);
     if (played) slot.appendChild(createCardElement(played.card));
